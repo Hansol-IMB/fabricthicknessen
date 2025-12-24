@@ -1,74 +1,46 @@
 <!doctype html>
 <html lang="ko">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vol. 18 두께 계산</title>
-<style>
-  :root{--panel-max:90vh}
-  html,body{height:100%}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45;max-width:1100px;margin:24px auto;padding:0 16px}
-  h1{font-size:1.6rem;margin:0 0 10px;display:flex;align-items:center;justify-content:space-between}
-  .grid{display:grid;gap:16px}
-  .grid-2{grid-template-columns:1fr 1fr; column-gap:24px}
-  @media (max-width:740px){.grid-2{grid-template-columns:1fr}}
-  .card{border:1px solid #ddd;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin:10px 0;background:#fff}
-  label{display:block;font-weight:600;margin:.4rem 0 .3rem}
-  input,select,button,textarea{font-size:1rem}
-  input,select{width:100%;padding:.7rem .8rem;border:1px solid #ccc;border-radius:10px;box-sizing:border-box}
-  .btn{padding:.6rem 1rem;border-radius:10px;border:1px solid #ccc;background:#fff;cursor:pointer}
-  .btn.primary{background:#111;color:#fff;border-color:#111}
-  .btn.small{padding:.3rem .6rem;font-size:.9rem}
-  .out{background:#fafafa;border:1px dashed #ddd;border-radius:10px;padding:12px;margin-top:8px}
-  table{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed}
-  th,td{border:1px solid #e4e4e4;padding:8px;text-align:center;word-break:keep-all}
-  th{background:#f6f6f6}
-  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:700}
-  .ok{background:#e7f7ee;color:#0a7f55}
-  .warn{background:#fff7e6;color:#b06900;border:1px solid #ffe1a7}
-  .no{background:#fdeceb;color:#b42318}
-  .muted{color:#666;font-size:.92rem}
-  .small{font-size:.9rem}
-  .big{font-size:1.6rem;font-weight:800}
-  .toggle{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
-  .caret{transition:transform .2s ease}
-  .collapsed .caret{transform:rotate(-90deg)}
-  .hidden{display:none}
-  .details{margin-top:8px}
-  .details code{background:#f3f3f3;border-radius:6px;padding:2px 6px}
-  .catwrap{display:grid;grid-template-columns:repeat(4,1fr); gap:10px; margin-top:8px}
-  @media (max-width:740px){.catwrap{grid-template-columns:repeat(2,1fr)}}
-  .catbtn{height:42px; display:flex; align-items:center; justify-content:center;
-          border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:700;}
-  .catbtn.active{background:#111;color:#fff;border-color:#111}
-  .adminbar{display:none} /* header buttons 숨김(문서 하단에 동일 버튼 배치) */
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vol. 18 두께 계산</title>
+  <style>
+    html,body{height:100%}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45;max-width:1100px;margin:24px auto;padding:0 16px}
+    h1{font-size:1.6rem;margin:0 0 10px}
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:1fr 1fr; column-gap:24px}
+    @media (max-width:740px){.grid-2{grid-template-columns:1fr}}
+    .card{border:1px solid #ddd;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin:10px 0;background:#fff}
+    label{display:block;font-weight:600;margin:.4rem 0 .3rem}
+    input,select{font-size:1rem;width:100%;padding:.7rem .8rem;border:1px solid #ccc;border-radius:10px;box-sizing:border-box}
+    .out{background:#fafafa;border:1px dashed #ddd;border-radius:10px;padding:12px;margin-top:8px}
+    table{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed}
+    th,td{border:1px solid #e4e4e4;padding:8px;text-align:center;word-break:keep-all}
+    th{background:#f6f6f6}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:700}
+    .ok{background:#e7f7ee;color:#0a7f55}
+    .warn{background:#fff7e6;color:#b06900;border:1px solid #ffe1a7}
+    .no{background:#fdeceb;color:#b42318}
+    .muted{color:#666;font-size:.92rem}
+    .small{font-size:.9rem}
+    .big{font-size:1.6rem;font-weight:800}
+    .toggle{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
+    .caret{transition:transform .2s ease}
+    .collapsed .caret{transform:rotate(-90deg)}
+    .hidden{display:none}
+    .details{margin-top:8px}
+    .details code{background:#f3f3f3;border-radius:6px;padding:2px 6px}
+    .catwrap{display:grid;grid-template-columns:repeat(4,1fr); gap:10px; margin-top:8px}
+    @media (max-width:740px){.catwrap{grid-template-columns:repeat(2,1fr)}}
+    .catbtn{height:42px; display:flex; align-items:center; justify-content:center;
+            border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:700;}
+    .catbtn.active{background:#111;color:#fff;border-color:#111}
+  </style>
+</head>
 
-  /* Modal & panel scroll */
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}
-  .modal.show{display:flex}
-  .panel{background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);width:min(980px,100%);max-height:var(--panel-max);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px}
-  .panel h3{margin:6px 0 10px}
-  .tg{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:center}
-  .tg .hdr{font-weight:700;color:#444}
-  .fg{display:grid;grid-template-columns:1.5fr 1.5fr .8fr auto;gap:8px;align-items:center}
-  .lg{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:center}
-  .row{display:contents}
-  .row>*{min-width:0}
-  .delbtn{white-space:nowrap}
-
-  /* collapsible */
-  details summary{cursor:pointer;user-select:none;font-weight:700}
-  details{border:1px dashed #e5e5e5;border-radius:10px;padding:10px;margin:8px 0}
-</style>
 <body>
-  <h1>
-    <span>Vol.18 두께 계산</span>
-    <span class="adminbar">
-      <button class="btn small" onclick="exportJSON()">JSON 내보내기</button>
-      <button class="btn small" onclick="importJSON()">JSON 가져오기</button>
-      <button class="btn small" onclick="saveIntoHTML()">HTML로 저장</button>
-      <button class="btn primary small" onclick="openAdmin()">Admin</button>
-    </span>
-  </h1>
+  <h1>Vol.18 두께 계산</h1>
 
   <div class="card">
     <div class="grid grid-2">
@@ -95,7 +67,7 @@
 
     <div class="out" style="margin-top:12px">
       <div>전체 두께 <span class="big" id="g6">-</span> mm</div>
-      <div id="detailToggle" class="toggle collapsed" onclick="toggleDetails()">
+      <div id="detailToggle" class="toggle collapsed">
         <span class="caret">▶</span><span class="muted small">상세 보기 (지름·공식·중간값)</span>
       </div>
       <div id="details" class="details hidden small">
@@ -109,13 +81,15 @@
   <div class="card">
     <h3>커버별 최대 두께 & 적용 가능 여부</h3>
     <table id="limitTable">
-      <thead><tr><th>커버</th><th>최대 두께</th><th>적용 가능 여부</th></tr></thead>
+      <thead>
+        <tr><th>커버</th><th>최대 두께</th><th>적용 가능 여부</th></tr>
+      </thead>
       <tbody></tbody>
     </table>
   </div>
 
   <div class="card collapsed" id="tubeCard">
-    <div class="toggle" onclick="toggleTubeList()">
+    <div class="toggle" id="tubeToggle">
       <span class="caret">▶</span><h3 style="margin:0">튜브 목록 (접기/펼치기)</h3>
     </div>
     <div id="tubeList" class="hidden">
@@ -126,109 +100,111 @@
     </div>
   </div>
 
-  <!-- 내장 데이터(JSON) -->
+  <!-- ✅ 내장 데이터(JSON) : "관리자/로컬스토리지/비밀번호" 관련 데이터 제거 -->
   <script id="data-json" type="application/json">
- "groups": {
-    "Innowin": [
-      {"display":"◎ Innocence 75mm","original":"◎ Innocence 75mm","e6":0.49},
-      {"display":"Shangrila Solid","original":"Shangrila Solid","e6":0.62},
-      {"display":"Shangrila Blackout","original":"Shangrila Blackout","e6":0.76},
-      {"display":"Innocence 75mm","original":"Innocence 75mm","e6":0.49}
-    ],
-    "Twins": [
-      {"display":"◎ TWG Gold","original":"◎ TWG Gold","e6":0.35},
-      {"display":"◎ Metal","original":"◎ Metal","e6":0.34},
-      {"display":"◎ Amber","original":"◎ Amber","e6":0.27},
-      {"display":"Sparkle","original":"Sparkle","e6":0.46}
-    ],
-    "Combi": [
-      {"display":"◎ Acaba2 (Semi Blackout)","original":"◎ Acaba2 (Semi Blackout)","e6":0.51},
-      {"display":"◎ Alpine","original":"◎ Alpine","e6":0.29},
-      {"display":"◎ Belita","original":"◎ Belita","e6":0.48},
-      {"display":"◎ Celestial","original":"◎ Celestial","e6":0.32},
-      {"display":"◎ Evere (Semi Blackout)","original":"◎ Evere (Semi Blackout)","e6":0.42},
-      {"display":"◎ Daisy (Semi Blackout)","original":"◎ Daisy (Semi Blackout)","e6":0.42},
-      {"display":"◎ Delos (Blackout)","original":"◎ Delos (Blackout)","e6":0.49},
-      {"display":"◎ Lento (Semi Blackout)","original":"◎ Lento (Semi Blackout)","e6":0.49},
-      {"display":"◎ Lewis","original":"◎ Lewis","e6":0.35},
-      {"display":"◎ Linen B/O (Semi Blackout)","original":"◎ Linen B/O (Semi Blackout)","e6":0.69},
-      {"display":"◎ Malta","original":"◎ Malta","e6":0.37},
-      {"display":"◎ Bailey","original":"◎ Bailey","e6":0.29},
-      {"display":"◎ Abyss","original":"◎ Abyss","e6":0.26},
-      {"display":"◎ Camilla (Blackout)","original":"◎ Camilla (Blackout)","e6":0.45},
-      {"display":"◎ Timberlook","original":"◎ Timberlook","e6":0.45},
-      {"display":"◎ Parma (Blackout)","original":"◎ Parma (Blackout)","e6":0.49},
-      {"display":"Naomi (Semi Blackout)","original":"Naomi (Semi Blackout)","e6":0.62},
-      {"display":"Dublin","original":"Dublin","e6":0.34},
-      {"display":"Lafia (Semi Blackout)","original":"Lafia (Semi Blackout)","e6":0.5},
-      {"display":" Lydia (Blackout/Non-Blackout)","original":" Lydia (Blackout/Non-Blackout)","e6":0.44},
-      {"display":"Libera","original":"Libera","e6":0.28},
-      {"display":"Linen Zebra","original":"Linen Zebra","e6":0.33},
-      {"display":"Monaco","original":"Monaco","e6":0.51},
-      {"display":"Morning FR","original":"Morning FR","e6":0.25},
-      {"display":"Viar (Semi Blackout)","original":"Viar (Semi Blackout)","e6":0.46},
-      {"display":"Bilbao (Semi Blackout)","original":"Bilbao (Semi Blackout)","e6":0.67},
-      {"display":"Cezanne (Blackout)","original":"Cezanne (Blackout)","e6":0.6},
-      {"display":"Adela F/R (Semi Blackout)","original":"Adela F/R (Semi Blackout)","e6":0.43},
-      {"display":"Andorra (Semi Blackout)","original":"Andorra (Semi Blackout)","e6":0.42},
-      {"display":"Olive","original":"Olive","e6":0.61},
-      {"display":"Karaman (Blackout)","original":"Karaman (Blackout)","e6":0.42},
-      {"display":"Krabi","original":"Krabi","e6":0.43},
-      {"display":"Phoenix (Semi Blackout)","original":"Phoenix (Semi Blackout)","e6":0.5}
-    ],
-    "Roll": [
-      {"display":"◎ Coral","original":"◎ Coral","e6":0.33},
-      {"display":"◎ Halong Bay","original":"◎ Halong Bay","e6":0.44},
-      {"display":"◎ Polar night Blackout F.R","original":"◎ Polar night Blackout F.R","e6":0.6},
-      {"display":"◎ Glitter ","original":"◎ Glitter ","e6":0.31},
-      {"display":"◎ Lenola Foam (Blackout)","original":"◎ Lenola Foam (Blackout)","e6":0.48},
-      {"display":"◎ Rain","original":"◎ Rain","e6":0.34},
-      {"display":"◎ Makalu Form (Blackout)","original":"◎ Makalu Form (Blackout)","e6":0.45},
-      {"display":"◎ Mestia ","original":"◎ Mestia ","e6":0.35},
-      {"display":"◎ Millet (Perfect) (Blackout) ","original":"◎ Millet (Perfect) (Blackout) ","e6":0.58},
-      {"display":"◎ Vivid ","original":"◎ Vivid ","e6":0.38},
-      {"display":"◎ Sunscreen 4TW ","original":"◎ Sunscreen 4TW ","e6":0.75},
-      {"display":"◎ Sunflat F.R","original":"◎ Sunflat F.R","e6":0.38},
-      {"display":"◎ Ecoscreen foam (Blackout) ","original":"◎ Ecoscreen foam (Blackout) ","e6":0.72},
-      {"display":"◎ Ecoflat ","original":"◎ Ecoflat ","e6":0.38},
-      {"display":"◎ Elvas ","original":"◎ Elvas ","e6":0.3},
-      {"display":"◎ Cherokee Foam (Blackout)","original":"◎ Cherokee Foam (Blackout)","e6":0.61},
-      {"display":"◎ Tahiti ","original":"◎ Tahiti ","e6":0.33},
-      {"display":"◎ Trevi ","original":"◎ Trevi ","e6":0.47},
-      {"display":"Marina Foam F.R (Blackout)","original":"Marina Foam F.R (Blackout)","e6":0.64},
-      {"display":"Marina Foam (Blackout)","original":"Marina Foam (Blackout)","e6":0.64},
-      {"display":"Radena F.R","original":"Radena F.R","e6":0.35},
-      {"display":"VGR B/O","original":"VGR B/O","e6":0.41},
-      {"display":"Granada","original":"Granada","e6":0.3},
-      {"display":"Grend F.R","original":"Grend F.R","e6":0.48},
-      {"display":"Nouvelle F.R (Blackout)","original":"Nouvelle F.R (Blackout)","e6":0.27},
-      {"display":"Lamong","original":"Lamong","e6":0.35},
-      {"display":"Sunscreen Rex 5%","original":"Sunscreen Rex 5%","e6":0.58},
-      {"display":"Mild","original":"Mild","e6":0.35},
-      {"display":"Morea","original":"Morea","e6":0.46},
-      {"display":"Salt Lake Foam (Blackout) ","original":"Salt Lake Foam (Blackout) ","e6":0.35},
-      {"display":"Sindy F.R","original":"Sindy F.R","e6":0.37},
-      {"display":"Sunscreen 3N 1%","original":"Sunscreen 3N 1%","e6":0.68},
-      {"display":"Sunscreen 3N 1% Metal","original":"Sunscreen 3N 1% Metal","e6":0.68},
-      {"display":"Sunscreen 3N 3%","original":"Sunscreen 3N 3%","e6":0.57},
-      {"display":"Sunscreen 3N 3% Metal","original":"Sunscreen 3N 3% Metal","e6":0.57},
-      {"display":"Sunscreen 4DP (1%)","original":"Sunscreen 4DP (1%)","e6":1.0},
-      {"display":"Sunscreen 4N (3%)","original":"Sunscreen 4N (3%)","e6":0.77},
-      {"display":"Sunhill","original":"Sunhill","e6":0.56},
-      {"display":"Ariji","original":"Ariji","e6":0.73},
-      {"display":"Ecoscreen F.R","original":"Ecoscreen F.R","e6":0.53},
-      {"display":"Excel F.R (Blackout) ","original":"Excel F.R (Blackout)","e6":0.28},
-      {"display":"Wellington Foam (Blackout)","original":"Wellington Foam (Blackout)","e6":0.5},
-      {"display":"Jade","original":"Jade","e6":0.78},
-      {"display":"County","original":"County","e6":0.4},
-      {"display":"Capri (Blackout/Non-Blackout)","original":"Capri (Blackout/Non-Blackout)","e6":0.5},
-      {"display":"Cosca Foam (Blackout)","original":"Cosca Foam (Blackout)","e6":0.5},
-      {"display":"Torino F.R (Blackout)","original":"Torino F.R (Blackout)","e6":0.72},
-      {"display":"Pastel F.R","original":"Pastel F.R","e6":0.35},
-      {"display":"Sunscreen Haim 3%","original":"Sunscreen Haim 3%","e6":0.86},
-      {"display":"Hatchland","original":"Hatchland","e6":0.4},
-      {"display":"White Garden","original":"White Garden","e6":0.35}
-    ],
+  {
+    "groups": {
+      "Innowin": [
+        {"display":"◎ Innocence 75mm","original":"◎ Innocence 75mm","e6":0.49},
+        {"display":"Shangrila Solid","original":"Shangrila Solid","e6":0.62},
+        {"display":"Shangrila Blackout","original":"Shangrila Blackout","e6":0.76},
+        {"display":"Innocence 75mm","original":"Innocence 75mm","e6":0.49}
+      ],
+      "Twins": [
+        {"display":"◎ TWG Gold","original":"◎ TWG Gold","e6":0.35},
+        {"display":"◎ Metal","original":"◎ Metal","e6":0.34},
+        {"display":"◎ Amber","original":"◎ Amber","e6":0.27},
+        {"display":"Sparkle","original":"Sparkle","e6":0.46}
+      ],
+      "Combi": [
+        {"display":"◎ Acaba2 (Semi Blackout)","original":"◎ Acaba2 (Semi Blackout)","e6":0.51},
+        {"display":"◎ Alpine","original":"◎ Alpine","e6":0.29},
+        {"display":"◎ Belita","original":"◎ Belita","e6":0.48},
+        {"display":"◎ Celestial","original":"◎ Celestial","e6":0.32},
+        {"display":"◎ Evere (Semi Blackout)","original":"◎ Evere (Semi Blackout)","e6":0.42},
+        {"display":"◎ Daisy (Semi Blackout)","original":"◎ Daisy (Semi Blackout)","e6":0.42},
+        {"display":"◎ Delos (Blackout)","original":"◎ Delos (Blackout)","e6":0.49},
+        {"display":"◎ Lento (Semi Blackout)","original":"◎ Lento (Semi Blackout)","e6":0.49},
+        {"display":"◎ Lewis","original":"◎ Lewis","e6":0.35},
+        {"display":"◎ Linen B/O (Semi Blackout)","original":"◎ Linen B/O (Semi Blackout)","e6":0.69},
+        {"display":"◎ Malta","original":"◎ Malta","e6":0.37},
+        {"display":"◎ Bailey","original":"◎ Bailey","e6":0.29},
+        {"display":"◎ Abyss","original":"◎ Abyss","e6":0.26},
+        {"display":"◎ Camilla (Blackout)","original":"◎ Camilla (Blackout)","e6":0.45},
+        {"display":"◎ Timberlook","original":"◎ Timberlook","e6":0.45},
+        {"display":"◎ Parma (Blackout)","original":"◎ Parma (Blackout)","e6":0.49},
+        {"display":"Naomi (Semi Blackout)","original":"Naomi (Semi Blackout)","e6":0.62},
+        {"display":"Dublin","original":"Dublin","e6":0.34},
+        {"display":"Lafia (Semi Blackout)","original":"Lafia (Semi Blackout)","e6":0.5},
+        {"display":" Lydia (Blackout/Non-Blackout)","original":" Lydia (Blackout/Non-Blackout)","e6":0.44},
+        {"display":"Libera","original":"Libera","e6":0.28},
+        {"display":"Linen Zebra","original":"Linen Zebra","e6":0.33},
+        {"display":"Monaco","original":"Monaco","e6":0.51},
+        {"display":"Morning FR","original":"Morning FR","e6":0.25},
+        {"display":"Viar (Semi Blackout)","original":"Viar (Semi Blackout)","e6":0.46},
+        {"display":"Bilbao (Semi Blackout)","original":"Bilbao (Semi Blackout)","e6":0.67},
+        {"display":"Cezanne (Blackout)","original":"Cezanne (Blackout)","e6":0.6},
+        {"display":"Adela F/R (Semi Blackout)","original":"Adela F/R (Semi Blackout)","e6":0.43},
+        {"display":"Andorra (Semi Blackout)","original":"Andorra (Semi Blackout)","e6":0.42},
+        {"display":"Olive","original":"Olive","e6":0.61},
+        {"display":"Karaman (Blackout)","original":"Karaman (Blackout)","e6":0.42},
+        {"display":"Krabi","original":"Krabi","e6":0.43},
+        {"display":"Phoenix (Semi Blackout)","original":"Phoenix (Semi Blackout)","e6":0.5}
+      ],
+      "Roll": [
+        {"display":"◎ Coral","original":"◎ Coral","e6":0.33},
+        {"display":"◎ Halong Bay","original":"◎ Halong Bay","e6":0.44},
+        {"display":"◎ Polar night Blackout F.R","original":"◎ Polar night Blackout F.R","e6":0.6},
+        {"display":"◎ Glitter ","original":"◎ Glitter ","e6":0.31},
+        {"display":"◎ Lenola Foam (Blackout)","original":"◎ Lenola Foam (Blackout)","e6":0.48},
+        {"display":"◎ Rain","original":"◎ Rain","e6":0.34},
+        {"display":"◎ Makalu Form (Blackout)","original":"◎ Makalu Form (Blackout)","e6":0.45},
+        {"display":"◎ Mestia ","original":"◎ Mestia ","e6":0.35},
+        {"display":"◎ Millet (Perfect) (Blackout) ","original":"◎ Millet (Perfect) (Blackout) ","e6":0.58},
+        {"display":"◎ Vivid ","original":"◎ Vivid ","e6":0.38},
+        {"display":"◎ Sunscreen 4TW ","original":"◎ Sunscreen 4TW ","e6":0.75},
+        {"display":"◎ Sunflat F.R","original":"◎ Sunflat F.R","e6":0.38},
+        {"display":"◎ Ecoscreen foam (Blackout) ","original":"◎ Ecoscreen foam (Blackout) ","e6":0.72},
+        {"display":"◎ Ecoflat ","original":"◎ Ecoflat ","e6":0.38},
+        {"display":"◎ Elvas ","original":"◎ Elvas ","e6":0.3},
+        {"display":"◎ Cherokee Foam (Blackout)","original":"◎ Cherokee Foam (Blackout)","e6":0.61},
+        {"display":"◎ Tahiti ","original":"◎ Tahiti ","e6":0.33},
+        {"display":"◎ Trevi ","original":"◎ Trevi ","e6":0.47},
+        {"display":"Marina Foam F.R (Blackout)","original":"Marina Foam F.R (Blackout)","e6":0.64},
+        {"display":"Marina Foam (Blackout)","original":"Marina Foam (Blackout)","e6":0.64},
+        {"display":"Radena F.R","original":"Radena F.R","e6":0.35},
+        {"display":"VGR B/O","original":"VGR B/O","e6":0.41},
+        {"display":"Granada","original":"Granada","e6":0.3},
+        {"display":"Grend F.R","original":"Grend F.R","e6":0.48},
+        {"display":"Nouvelle F.R (Blackout)","original":"Nouvelle F.R (Blackout)","e6":0.27},
+        {"display":"Lamong","original":"Lamong","e6":0.35},
+        {"display":"Sunscreen Rex 5%","original":"Sunscreen Rex 5%","e6":0.58},
+        {"display":"Mild","original":"Mild","e6":0.35},
+        {"display":"Morea","original":"Morea","e6":0.46},
+        {"display":"Salt Lake Foam (Blackout) ","original":"Salt Lake Foam (Blackout) ","e6":0.35},
+        {"display":"Sindy F.R","original":"Sindy F.R","e6":0.37},
+        {"display":"Sunscreen 3N 1%","original":"Sunscreen 3N 1%","e6":0.68},
+        {"display":"Sunscreen 3N 1% Metal","original":"Sunscreen 3N 1% Metal","e6":0.68},
+        {"display":"Sunscreen 3N 3%","original":"Sunscreen 3N 3%","e6":0.57},
+        {"display":"Sunscreen 3N 3% Metal","original":"Sunscreen 3N 3% Metal","e6":0.57},
+        {"display":"Sunscreen 4DP (1%)","original":"Sunscreen 4DP (1%)","e6":1.0},
+        {"display":"Sunscreen 4N (3%)","original":"Sunscreen 4N (3%)","e6":0.77},
+        {"display":"Sunhill","original":"Sunhill","e6":0.56},
+        {"display":"Ariji","original":"Ariji","e6":0.73},
+        {"display":"Ecoscreen F.R","original":"Ecoscreen F.R","e6":0.53},
+        {"display":"Excel F.R (Blackout) ","original":"Excel F.R (Blackout)","e6":0.28},
+        {"display":"Wellington Foam (Blackout)","original":"Wellington Foam (Blackout)","e6":0.5},
+        {"display":"Jade","original":"Jade","e6":0.78},
+        {"display":"County","original":"County","e6":0.4},
+        {"display":"Capri (Blackout/Non-Blackout)","original":"Capri (Blackout/Non-Blackout)","e6":0.5},
+        {"display":"Cosca Foam (Blackout)","original":"Cosca Foam (Blackout)","e6":0.5},
+        {"display":"Torino F.R (Blackout)","original":"Torino F.R (Blackout)","e6":0.72},
+        {"display":"Pastel F.R","original":"Pastel F.R","e6":0.35},
+        {"display":"Sunscreen Haim 3%","original":"Sunscreen Haim 3%","e6":0.86},
+        {"display":"Hatchland","original":"Hatchland","e6":0.4},
+        {"display":"White Garden","original":"White Garden","e6":0.35}
+      ]
+    },
     "tubes": [
       {"name":"Winhouse tube(25ø)","weight":0.228,"diameter":25},
       {"name":"Combi/Roll tube(30ø)","weight":0.216,"diameter":30},
@@ -245,7 +221,12 @@
       {"name":"70ø tube","weight":1.463,"diameter":70},
       {"name":"90ø tube","weight":2.327,"diameter":90}
     ],
-    "defaults": {"height":1000,"tube":"콤비/롤(30ø)","group":"이노윈","fabric_display":"◎ 이노센스 AT 75"},
+    "defaults": {
+      "height": 1000,
+      "tube": "Combi/Roll tube(30ø)",
+      "group": "Innowin",
+      "fabric_original": "◎ Innocence 75mm"
+    },
     "limits": [
       {"name":"Round Corner Cover (small)","limit":60},
       {"name":"Round Corner Cover (medium)","limit":75},
@@ -257,371 +238,168 @@
   }
   </script>
 
-  <!-- Admin Modal -->
-  <div id="adminModal" class="modal" aria-modal="true" role="dialog">
-    <div class="panel">
-      <div id="adminLogin">
-        <h3>관리자 로그인</h3>
-        <div style="display:flex;gap:8px;align-items:center">
-          <label style="min-width:90px">비밀번호</label><input id="adminPwd" type="password" placeholder="admin123" />
-          <button class="btn primary" onclick="login()">로그인</button>
-          <button class="btn" onclick="closeAdmin()">닫기</button>
-        </div>
-        <div class="small muted" style="margin-top:8px">* 비밀번호는 이 브라우저의 로컬스토리지에만 저장됩니다.</div>
-      </div>
-
-      <div id="adminPanel" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px">
-          <h3 style="margin:0">데이터 편집</h3>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn small" onclick="saveOverrides()">브라우저 저장</button>
-            <button class="btn small" onclick="resetOverrides()">브라우저 초기화</button>
-            <button class="btn small" onclick="applyOverridesToRuntime()">화면 반영</button>
-            <button class="btn small" onclick="closeAdmin()">닫기</button>
-          </div>
-        </div>
-
-        <details open class="card">
-          <summary>🔧 튜브 목록 편집</summary>
-          <div class="tg" id="tubeEditor">
-            <div class="hdr">이름</div>
-            <div class="hdr">무게</div>
-            <div class="hdr">지름</div>
-            <div class="hdr">삭제</div>
-          </div>
-          <button class="btn small" style="margin-top:8px" onclick="addTube()">튜브 추가</button>
-        </details>
-
-        <details open class="card">
-          <summary>🧵 원단(카테고리별) 편집</summary>
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-            <label style="min-width:80px">카테고리</label>
-            <select id="catSelect"></select>
-          </div>
-          <div class="fg" id="fabricEditor">
-            <div class="hdr">표시 이름</div>
-            <div class="hdr">원본 키</div>
-            <div class="hdr">두께(e6)</div>
-            <div class="hdr">삭제</div>
-          </div>
-          <button class="btn small" style="margin-top:8px" onclick="addFabric()">원단 추가</button>
-        </details>
-
-        <details open class="card">
-          <summary>📏 커버별 최대 두께 편집</summary>
-          <div class="lg" id="limitEditor">
-            <div class="hdr">커버 이름</div>
-            <div class="hdr">최대 두께</div>
-            <div class="hdr">삭제</div>
-          </div>
-          <button class="btn small" style="margin-top:8px" onclick="addLimit()">커버 추가</button>
-        </details>
-
-        <details class="card">
-          <summary>🔐 Admin 비밀번호 변경</summary>
-          <div style="display:grid;gap:8px;max-width:520px">
-            <input id="pwdCurrent" type="password" placeholder="현재 비밀번호">
-            <input id="pwdNew" type="password" placeholder="새 비밀번호">
-            <input id="pwdNew2" type="password" placeholder="새 비밀번호 확인">
-            <div style="display:flex;gap:8px">
-              <button class="btn small" onclick="changePassword()">변경</button>
-              <button class="btn small" onclick="resetPassword()">기본값으로 초기화(admin123)</button>
-            </div>
-            <div class="small muted">* 비밀번호는 HTML로 저장되지 않고, 이 브라우저의 로컬스토리지에만 저장됩니다.</div>
-          </div>
-        </details>
-      </div>
-    </div>
-  </div>
-
-  <!-- 문서 하단 관리 버튼 -->
-  <div class="card" style="margin-top:24px">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-      <button class="btn small" onclick="exportJSON()">JSON 내보내기</button>
-      <button class="btn small" onclick="importJSON()">JSON 가져오기</button>
-      <button class="btn small" onclick="saveIntoHTML()">HTML로 저장</button>
-      <button class="btn primary small" onclick="openAdmin()">Admin</button>
-    </div>
-  </div>
-
   <script>
-    const STORE_KEY = "thickness_data_overrides";
-    const PASS_KEY = "thickness_admin_pass";
-    const DEFAULT_PASS = "admin123";
     const $ = (id)=>document.getElementById(id);
 
-    function getEmbedded(){ 
-      const el = document.getElementById("data-json");
-      try { return JSON.parse(el.textContent); } catch (e) { alert("내장 데이터 파싱 실패"); return {}; }
-    }
-    const EMBED = getEmbedded();
-
-    function mergedData(){
-      const raw = localStorage.getItem(STORE_KEY);
-      if(!raw) return JSON.parse(JSON.stringify(EMBED));
-      try{ 
-        const over = JSON.parse(raw);
-        return {
-          groups: over.groups || EMBED.groups,
-          tubes: over.tubes || EMBED.tubes,
-          defaults: over.defaults || EMBED.defaults,
-          limits: over.limits || EMBED.limits,
-        };
-      }catch(e){ console.warn("Invalid overrides, using embed", e); return JSON.parse(JSON.stringify(EMBED)); }
+    function getEmbedded(){
+      const el = $("data-json");
+      try{
+        return JSON.parse((el.textContent || "").trim());
+      }catch(e){
+        console.error(e);
+        alert("내장 데이터(JSON) 파싱 실패: " + e.message);
+        return null;
+      }
     }
 
-    let DATA = mergedData();
+    const DATA = getEmbedded();
 
-    function currentPass(){ return localStorage.getItem(PASS_KEY) || DEFAULT_PASS; }
-
-    /* ---------- UI 초기화 ---------- */
-    function init(){
-      // 튜브 선택
-      const tSel = $("tube"); tSel.innerHTML="";
-      DATA.tubes.forEach(t=>{
-        const o=document.createElement("option");
-        o.value=t.name; o.textContent=t.name;
-        if(t.name===DATA.defaults.tube) o.selected=true;
-        tSel.appendChild(o);
-      });
-      // 카테고리 버튼
-      const cw = $("catwrap"); cw.innerHTML="";
-      Object.keys(DATA.groups).forEach(cat=>{
-        const b=document.createElement("button");
-        b.className="catbtn"+(cat===DATA.defaults.group?" active":"");
-        b.textContent=cat; b.dataset.cat=cat;
-        b.onclick=()=>setCategory(cat);
-        cw.appendChild(b);
-      });
-      // 튜브 표
-      const tBody = $("tubeTable"); tBody.innerHTML="";
-      DATA.tubes.forEach(t=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${t.name}</td><td>${t.weight}</td><td>${t.diameter}</td>`;
-        tBody.appendChild(tr);
-      });
-      setCategory(DATA.defaults.group);
-      renderLimitRows(0);
-
-      // admin 초기 상태
-      $("adminModal").classList.remove("show"); 
-      $("adminLogin").style.display = "";
-      $("adminPanel").style.display = "none";
+    function getTube(name){
+      return (DATA?.tubes || []).find(t => t.name === name);
     }
-
-    function setCategory(cat){
-      document.querySelectorAll(".catbtn").forEach(el=>el.classList.toggle("active", el.dataset.cat===cat));
-      const fSel = $("fabric"); fSel.innerHTML="";
-      const items = DATA.groups[cat] || [];
-      items.forEach((it,i)=>{
-        const o=document.createElement("option");
-        o.value=it.original; o.textContent=it.display;
-        if(i===0 || it.display===DATA.defaults.fabric_display) o.selected=true;
-        fSel.appendChild(o);
-      });
-      recalc();
-    }
-
-    function getTube(name){ return DATA.tubes.find(t=>t.name===name); }
 
     function renderLimitRows(g6){
-      const tb = document.querySelector("#limitTable tbody"); tb.innerHTML="";
-      DATA.limits.forEach(row=>{
+      const tb = document.querySelector("#limitTable tbody");
+      tb.innerHTML = "";
+      (DATA?.limits || []).forEach(row=>{
         let cls="no", label="불가능";
         if(g6>0){
-          if(g6<=row.limit-3){cls="ok";label="가능";}
-          else if(g6<=row.limit){cls="warn";label="가능(간섭위험)";}
+          if(g6 <= row.limit - 3){ cls="ok"; label="가능"; }
+          else if(g6 <= row.limit){ cls="warn"; label="가능(간섭위험)"; }
         }
         const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${row.name}</td><td><b>${row.limit}</b></td><td><span class="pill ${cls}">${label}</span></td>`;
+        tr.innerHTML = `
+          <td>${row.name}</td>
+          <td><b>${row.limit}</b></td>
+          <td><span class="pill ${cls}">${label}</span></td>`;
         tb.appendChild(tr);
       });
     }
 
+    function setCategory(cat){
+      document.querySelectorAll(".catbtn").forEach(el=>{
+        el.classList.toggle("active", el.dataset.cat === cat);
+      });
+
+      const fSel = $("fabric");
+      fSel.innerHTML = "";
+
+      const items = DATA.groups?.[cat] || [];
+      items.forEach((it, i)=>{
+        const o=document.createElement("option");
+        o.value = it.original;
+        o.textContent = it.display;
+        // 기본 원단 지정(없으면 첫번째)
+        const isDefault = (it.original === DATA.defaults?.fabric_original);
+        if(i===0 || isDefault) o.selected = true;
+        fSel.appendChild(o);
+      });
+
+      recalc();
+    }
+
     function recalc(){
-      let height = parseFloat($("height").value||0);
-      const tube = getTube($("tube").value); const diameter = tube ? tube.diameter : 0;
+      const height = parseFloat($("height").value || 0);
+
+      const tube = getTube($("tube").value);
+      const diameter = tube ? Number(tube.diameter) : 0;
+
       const activeCat = document.querySelector(".catbtn.active")?.dataset.cat;
-      const mult = (activeCat==="콤비"||activeCat==="트윈스")?2:1;   // 콤비/트윈스 2배 적용
-      const effH = height*mult;
-      const items = DATA.groups[activeCat]||[];
-      const sel = items.find(it=>it.original === $("fabric").value);
-      const e6 = sel?sel.e6:undefined;
-      let I=NaN,G=NaN;
-      if((effH>=0)&&(diameter>0)&&(e6>0)){
-        I=((-2*Math.PI*diameter)+Math.sqrt((2*Math.PI*diameter)**2+8*Math.PI*effH*e6))/(2*Math.PI*e6);
-        G=diameter+2*I*e6;
+      // 원 코드 유지: Combi/Twins만 2배 적용
+      const mult = (activeCat === "Combi" || activeCat === "Twins") ? 2 : 1;
+      const effH = height * mult;
+
+      const items = DATA.groups?.[activeCat] || [];
+      const sel = items.find(it => it.original === $("fabric").value);
+      const e6 = sel ? Number(sel.e6) : NaN;
+
+      let I = NaN, G = NaN;
+      if(effH >= 0 && diameter > 0 && e6 > 0){
+        I = ((-2*Math.PI*diameter) + Math.sqrt((2*Math.PI*diameter)**2 + 8*Math.PI*effH*e6)) / (2*Math.PI*e6);
+        G = diameter + 2*I*e6;
       }
-      $("g6").textContent = isFinite(G)?G.toFixed(1):"-";
-      $("diameter").textContent = isFinite(diameter)?diameter:"-";
-      $("e6").textContent = (e6!==undefined)?e6:"-";
-      $("i6").textContent = isFinite(I)?I.toFixed(3):"-";
-      renderLimitRows(isFinite(G)?G:0);
+
+      $("g6").textContent = Number.isFinite(G) ? G.toFixed(1) : "-";
+      $("diameter").textContent = Number.isFinite(diameter) ? String(diameter) : "-";
+      $("e6").textContent = Number.isFinite(e6) ? String(e6) : "-";
+      $("i6").textContent = Number.isFinite(I) ? I.toFixed(3) : "-";
+
+      renderLimitRows(Number.isFinite(G) ? G : 0);
     }
 
-    /* ---------- Admin ---------- */
-    function openAdmin(){ $("adminModal").classList.add("show"); }
-    function closeAdmin(){ $("adminModal").classList.remove("show"); $("adminLogin").style.display=""; $("adminPanel").style.display="none"; }
-    function login(){ 
-      const pwd = $("adminPwd").value.trim();
-      if(pwd===currentPass()){ $("adminLogin").style.display="none"; $("adminPanel").style.display=""; mountEditors(); }
-      else alert("비밀번호가 올바르지 않습니다.");
-    }
+    function init(){
+      if(!DATA) return;
 
-    function mountEditors(){ 
-      // Tubes
-      const host = $("tubeEditor");
-      host.querySelectorAll(".row").forEach(n=>n.remove());
-      DATA.tubes.forEach((t,idx)=> host.appendChild(tubeRow(idx,t)));
-      // Fabrics
-      const cs = $("catSelect"); cs.innerHTML="";
-      Object.keys(DATA.groups).forEach(cat=>{ const o=document.createElement("option"); o.value=cat; o.textContent=cat; cs.appendChild(o); });
-      cs.onchange = ()=> renderFabricEditor(cs.value);
-      cs.value = Object.keys(DATA.groups)[0];
-      renderFabricEditor(cs.value);
-      // Limits
-      renderLimitEditor();
-    }
+      // 기본 높이
+      if(DATA.defaults?.height != null) $("height").value = DATA.defaults.height;
 
-    function tubeRow(idx,t){ 
-      const row = document.createElement("div"); row.className="row";
-      row.innerHTML = `
-        <input type="text" value="${t.name}" data-k="name">
-        <input type="number" step="0.001" value="${t.weight}" data-k="weight">
-        <input type="number" step="0.001" value="${t.diameter}" data-k="diameter">
-        <button class="btn small delbtn" data-act="del">삭제</button>`;
-      row.addEventListener("input",e=>{
-        const k=e.target.getAttribute("data-k"); if(!k) return;
-        DATA.tubes[idx][k]=(k==="name")?e.target.value:parseFloat(e.target.value||0);
+      // 튜브 선택
+      const tSel = $("tube");
+      tSel.innerHTML = "";
+      (DATA.tubes || []).forEach(t=>{
+        const o=document.createElement("option");
+        o.value = t.name;
+        o.textContent = t.name;
+        if(t.name === DATA.defaults?.tube) o.selected = true;
+        tSel.appendChild(o);
       });
-      row.querySelector('[data-act="del"]').onclick=()=>{
-        DATA.tubes.splice(idx,1); mountEditors(); applyOverridesToRuntime();
-      };
-      return row;
-    }
 
-    function addTube(){ DATA.tubes.push({name:"새 튜브",weight:0,diameter:0}); mountEditors(); applyOverridesToRuntime(); }
-
-    function renderFabricEditor(cat){ 
-      const host = $("fabricEditor");
-      host.querySelectorAll(".row").forEach(n=>n.remove());
-      const arr = DATA.groups[cat]||[]; 
-      arr.forEach((f,idx)=> host.appendChild(fabricRow(cat,idx,f)));
-    }
-
-    function fabricRow(cat,idx,f){ 
-      const row=document.createElement("div"); row.className="row";
-      row.innerHTML = `
-        <input type="text" value="${f.display}" data-k="display">
-        <input type="text" value="${f.original}" data-k="original">
-        <input type="number" step="0.001" value="${f.e6}" data-k="e6">
-        <button class="btn small delbtn" data-act="del">삭제</button>`;
-      row.addEventListener("input",e=>{
-        const k=e.target.getAttribute("data-k"); if(!k) return;
-        DATA.groups[cat][idx][k]=(k==="e6")?parseFloat(e.target.value||0):e.target.value;
-        applyOverridesToRuntime();
+      // 카테고리 버튼
+      const cw = $("catwrap");
+      cw.innerHTML = "";
+      Object.keys(DATA.groups || {}).forEach(cat=>{
+        const b=document.createElement("button");
+        b.type = "button";
+        b.className = "catbtn" + (cat === DATA.defaults?.group ? " active" : "");
+        b.textContent = cat;
+        b.dataset.cat = cat;
+        b.addEventListener("click", ()=>setCategory(cat));
+        cw.appendChild(b);
       });
-      row.querySelector('[data-act="del"]').onclick=()=>{
-        DATA.groups[cat].splice(idx,1); renderFabricEditor(cat); applyOverridesToRuntime();
-      };
-      return row;
-    }
 
-    function addFabric(){ const cat=$("catSelect").value; (DATA.groups[cat]=DATA.groups[cat]||[]).push({display:"새 원단",original:"새 원본키",e6:0.0}); renderFabricEditor(cat); applyOverridesToRuntime(); }
-
-    // Limits editor
-    function renderLimitEditor(){
-      const host=$("limitEditor");
-      host.querySelectorAll(".row").forEach(n=>n.remove());
-      DATA.limits.forEach((it,idx)=>{
-        const row=document.createElement("div"); row.className="row";
-        row.innerHTML=`
-          <input type="text" value="${it.name}" data-k="name">
-          <input type="number" step="0.001" value="${it.limit}" data-k="limit">
-          <button class="btn small delbtn" data-act="del">삭제</button>`;
-        row.addEventListener("input", e=>{
-          const k=e.target.getAttribute("data-k"); if(!k) return;
-          DATA.limits[idx][k]=(k==="limit")?parseFloat(e.target.value||0):e.target.value;
-          applyOverridesToRuntime();
-        });
-        row.querySelector('[data-act="del"]').onclick=()=>{
-          DATA.limits.splice(idx,1); renderLimitEditor(); applyOverridesToRuntime();
-        };
-        host.appendChild(row);
+      // 튜브 표
+      const tBody = $("tubeTable");
+      tBody.innerHTML = "";
+      (DATA.tubes || []).forEach(t=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML = `<td>${t.name}</td><td>${t.weight}</td><td>${t.diameter}</td>`;
+        tBody.appendChild(tr);
       });
+
+      // 카테고리 초기 선택 (없으면 첫번째)
+      const firstCat = Object.keys(DATA.groups || {})[0];
+      setCategory(DATA.defaults?.group || firstCat);
+
+      // 초기 limit 렌더
+      renderLimitRows(0);
+
+      // 이벤트
+      ["height","tube","fabric"].forEach(id=>{
+        $(id).addEventListener("input", recalc);
+        $(id).addEventListener("change", recalc);
+      });
+
+      // 상세 토글
+      $("detailToggle").addEventListener("click", ()=>{
+        const wrap = $("detailToggle");
+        const el = $("details");
+        const open = el.classList.contains("hidden");
+        el.classList.toggle("hidden", !open);
+        wrap.classList.toggle("collapsed", !open);
+      });
+
+      // 튜브 리스트 토글
+      $("tubeToggle").addEventListener("click", ()=>{
+        const list = $("tubeList");
+        const card = $("tubeCard");
+        const open = list.classList.contains("hidden");
+        list.classList.toggle("hidden", !open);
+        card.classList.toggle("collapsed", !open);
+      });
+
+      // 최초 계산
+      recalc();
     }
-    function addLimit(){ DATA.limits.push({name:"새 커버", limit:0}); renderLimitEditor(); applyOverridesToRuntime(); }
-
-    // Save/apply
-    function saveOverrides(){ localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); alert("브라우저 저장 완료"); }
-    function resetOverrides(){ localStorage.removeItem(STORE_KEY); DATA = mergedData(); mountEditors(); applyOverridesToRuntime(); alert("브라우저 저장 초기화"); }
-    function applyOverridesToRuntime(){ refreshRuntime(); }
-
-    // Export/Import/Save HTML
-    function exportJSON(){ const blob=new Blob([JSON.stringify(DATA,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="thickness_data.json"; a.click(); URL.revokeObjectURL(a.href); }
-    function importJSON(){ const i=document.createElement("input"); i.type="file"; i.accept="application/json"; i.onchange=async()=>{ const f=i.files[0]; if(!f) return; const txt=await f.text(); try{ const obj=JSON.parse(txt); localStorage.setItem(STORE_KEY, JSON.stringify(obj)); DATA = mergedData(); alert("가져오기 완료."); refreshRuntime(); if(document.getElementById('adminPanel').style.display!=='none') mountEditors(); }catch(e){ alert("JSON 파싱 오류: "+e.message); } }; i.click(); }
-
-    function saveIntoHTML(){
-      try{
-        const cloned = document.documentElement.cloneNode(true);
-        // 임베디드 JSON만 교체 (비밀번호는 저장하지 않음)
-        cloned.querySelector("#data-json").textContent = JSON.stringify(DATA);
-        const html = "<!doctype html>\n" + cloned.outerHTML;
-        const blob = new Blob([html], {type:"text/html"});
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "thickness_gui_saved.html";
-        a.click();
-        URL.revokeObjectURL(a.href);
-      }catch(e){
-        alert("HTML 저장 중 오류: " + e.message);
-      }
-    }
-
-    // Password change
-    function changePassword(){
-      const cur=$("pwdCurrent").value, nv=$("pwdNew").value, nv2=$("pwdNew2").value;
-      if(cur!==currentPass()){ alert("현재 비밀번호가 일치하지 않습니다."); return; }
-      if(!nv){ alert("새 비밀번호를 입력해주세요."); return; }
-      if(nv!==nv2){ alert("새 비밀번호 확인이 일치하지 않습니다."); return; }
-      localStorage.setItem(PASS_KEY, nv);
-      $("pwdCurrent").value=$("pwdNew").value=$("pwdNew2").value="";
-      alert("비밀번호가 변경되었습니다.");
-    }
-    function resetPassword(){ localStorage.removeItem(PASS_KEY); alert("비밀번호를 기본값(admin123)으로 초기화했습니다."); }
-
-    // runtime refresh
-    function refreshRuntime(){ 
-      const tSel=$("tube"); tSel.innerHTML="";
-      DATA.tubes.forEach(t=>{ const o=document.createElement("option"); o.value=t.name; o.textContent=t.name; if (t.name===DATA.defaults.tube) o.selected=true; tSel.appendChild(o); });
-      const cw=$("catwrap"); cw.innerHTML="";
-      Object.keys(DATA.groups).forEach(cat=>{ const b=document.createElement("button"); b.className="catbtn"+(cat===DATA.defaults.group?" active":""); b.textContent=cat; b.dataset.cat=cat; b.onclick=()=>setCategory(cat); cw.appendChild(b); });
-      const tb=document.getElementById("tubeTable"); tb.innerHTML="";
-      DATA.tubes.forEach(t=>{ const tr=document.createElement("tr"); tr.innerHTML=`<td>${t.name}</td><td>${t.weight}</td><td>${t.diameter}</td>`; tb.appendChild(tr); });
-      setCategory(DATA.defaults.group); recalc();
-
-      // Admin 패널을 열어둔 상태라면 목록도 동기화
-      if(document.getElementById('adminPanel').style.display!=='none'){ mountEditors(); }
-    }
-
-    function toggleDetails(){
-      const wrap=document.getElementById("detailToggle");
-      const el=document.getElementById("details");
-      if(el.classList.contains("hidden")){el.classList.remove("hidden"); wrap.classList.remove("collapsed");}
-      else {el.classList.add("hidden"); wrap.classList.add("collapsed");}
-    }
-    function toggleTubeList(){
-      const card=document.getElementById("tubeCard");
-      const list=document.getElementById("tubeList");
-      if(list.classList.contains("hidden")){list.classList.remove("hidden"); card.classList.remove("collapsed");}
-      else {list.classList.add("hidden"); card.classList.add("collapsed");}
-    }
-
-    document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeAdmin(); });
-    ["height","tube","fabric"].forEach(id=>{
-      document.addEventListener("input",(e)=>{ if (e.target.id===id) recalc(); });
-      document.addEventListener("change",(e)=>{ if (e.target.id===id) recalc(); });
-    });
 
     init();
   </script>
